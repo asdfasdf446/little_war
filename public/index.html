@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Protocol</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="ui-layer">
+        <div id="scoreboard"></div>
+        <div id="health-bar-container"><div id="health-bar"></div></div>
+        <div id="respawn-msg">复活中...</div>
+        <button id="mobile-reset-btn" onclick="location.reload()">↺</button>
+    </div>
+
+    <div id="login-screen">
+        <h1>NEON PROTOCOL</h1>
+        <p>SELECT YOUR CLASS</p>
+        <div class="class-container">
+            <div class="class-card" onclick="joinGame('RIFLE')">
+                <h2 style="color:#00ffff">RIFLE</h2>
+                <p>突击兵<br>均衡 / 速射</p>
+            </div>
+            <div class="class-card" onclick="joinGame('SNIPER')">
+                <h2 style="color:#00ff00">SNIPER</h2>
+                <p>狙击手<br>高伤 / 远视</p>
+            </div>
+            <div class="class-card" onclick="joinGame('SHOTGUN')">
+                <h2 style="color:#ff0000">SHOTGUN</h2>
+                <p>攻坚手<br>散射 / 爆发</p>
+            </div>
+        </div>
+        <p id="mobile-hint" style="font-size: 12px; margin-top: 20px; color: #666; display:none;">(检测到移动设备，将启用触屏模式)</p>
+    </div>
+
+    <div id="mobile-controls">
+        <div id="joystick-zone">
+            <div id="joystick-base">
+                <div id="joystick-stick"></div>
+            </div>
+        </div>
+        <div id="action-zone">
+            <button id="btn-skill" class="action-btn" style="border-color: #FFD700; color: #FFD700;">SKILL</button>
+            <button id="btn-shoot" class="action-btn" style="border-color: #ff4444; color: #ff4444;">FIRE</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="AssetFactory.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
