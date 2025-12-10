@@ -1,4 +1,3 @@
-// IP 转颜色算法
 function stringToColor(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -7,37 +6,44 @@ function stringToColor(str) {
     let color = '#';
     for (let i = 0; i < 3; i++) {
         let value = (hash >> (i * 8)) & 0xFF;
-        // 保证颜色稍微亮一点，避免太黑看不见
-        if(value < 50) value += 50; 
+        // 提高亮度基准，防止颜色过暗
+        if(value < 80) value += 80; 
         color += ('00' + value.toString(16)).substr(-2);
     }
     return color;
 }
 
 class Player {
-    constructor(id, ip, type) {
+    constructor(id, ip, type, name, device) {
         this.id = id;
         this.ip = ip;
-        this.color = stringToColor(ip); // 颜色由IP决定
+        this.name = name || ('Agent-' + id.substr(0,4)); 
+        this.device = device || 'PC';
+        
+        // === V12.0: 复合颜色源 (ID + IP + 设备) ===
+        // 这样即使名字一样，IP不同颜色也不一样
+        const colorSource = this.name + this.ip + this.device;
+        this.color = stringToColor(colorSource);
         
         this.x = Math.random() * 1800 + 100;
         this.y = Math.random() * 1800 + 100;
         this.angle = 0;
         this.hp = 100;
         this.maxHp = 100;
-        this.score = 0;
+        this.kills = 0;
+        this.deaths = 0;
+        this.latency = 0;
         this.dead = false;
         
         const validTypes = ['RIFLE', 'SNIPER', 'SHOTGUN'];
         this.type = validTypes.includes(type) ? type : 'RIFLE'; 
         
-        // 技能状态
-        this.skillCdMax = 0;     // 技能总CD
-        this.skillCdCurrent = 0; // 当前冷却
-        this.skillActiveTime = 0;// 技能持续时间
-        this.isInvulnerable = false; // 无敌状态
-        this.isInvisible = false;    // 隐身状态
-        this.speedMultiplier = 1;    // 速度倍率
+        this.skillCdMax = 0;
+        this.skillCdCurrent = 0;
+        this.skillActiveTime = 0;
+        this.isInvulnerable = false;
+        this.isInvisible = false;
+        this.speedMultiplier = 1;
 
         this.applyTypeStats();
     }
@@ -50,7 +56,7 @@ class Player {
                 this.cd = 60;
                 this.damage = 60;
                 this.range = 1000;
-                this.skillCdMax = 600; // 10秒CD (60帧/秒)
+                this.skillCdMax = 600;
                 break;
             case 'SHOTGUN':
                 this.baseSpeed = 4.5;
@@ -58,15 +64,15 @@ class Player {
                 this.cd = 40;
                 this.damage = 15;
                 this.range = 350;
-                this.skillCdMax = 480; // 8秒CD
+                this.skillCdMax = 480;
                 break;
-            default: // RIFLE
+            default:
                 this.baseSpeed = 5;
                 this.radius = 22;
                 this.cd = 10;
                 this.damage = 10;
                 this.range = 650;
-                this.skillCdMax = 360; // 6秒CD
+                this.skillCdMax = 360;
                 break;
         }
         this.currentCd = 0;

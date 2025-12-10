@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+    cors: { origin: "*" },
+    transports: ['websocket', 'polling']
+});
 const path = require('path');
 const Game = require('./Game');
 
@@ -11,9 +14,10 @@ const game = new Game();
 
 io.on('connection', (socket) => {
     let ip = socket.handshake.address.replace('::ffff:', '');
+    if(ip === '1') ip = '127.0.0.1';
+    
     console.log('Connected:', ip);
     
-    // 初始化只发地图，不生成人
     socket.emit('init', { 
         id: socket.id, 
         width: game.mapWidth, 
@@ -21,14 +25,24 @@ io.on('connection', (socket) => {
         obstacles: game.obstacles 
     });
 
-    // 监听加入游戏请求
-    socket.on('joinGame', (type) => {
+    socket.on('joinGame', (data) => {
         if (game.players[socket.id]) game.removePlayer(socket.id);
-        game.addPlayer(socket.id, ip, type);
+        // === V11.0: 传入 device ===
+        game.addPlayer(socket.id, ip, data.type, data.name, data.device);
     });
 
     socket.on('input', (data) => {
         game.handleInput(socket.id, data);
+    });
+    
+    socket.on('ping_check', (clientTime) => {
+        socket.emit('pong_check', clientTime);
+    });
+
+    socket.on('report_latency', (latency) => {
+        if (game.players[socket.id]) {
+            game.players[socket.id].latency = latency;
+        }
     });
 
     socket.on('disconnect', () => {
@@ -36,10 +50,17 @@ io.on('connection', (socket) => {
     });
 });
 
+const TICK_RATE = 60; 
+const BROADCAST_RATE = 30; 
+let tickCount = 0;
+
 setInterval(() => {
     game.update();
-    io.emit('state', game.getState());
-}, 1000 / 60);
+    tickCount++;
+    if (tickCount % (TICK_RATE / BROADCAST_RATE) === 0) {
+        io.emit('state', game.getPackedState());
+    }
+}, 1000 / TICK_RATE);
 
 http.listen(3000, () => {
     console.log('Server running on 3000');
