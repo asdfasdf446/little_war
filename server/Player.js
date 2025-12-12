@@ -6,7 +6,6 @@ function stringToColor(str) {
     let color = '#';
     for (let i = 0; i < 3; i++) {
         let value = (hash >> (i * 8)) & 0xFF;
-        // 提高亮度基准，防止颜色过暗
         if(value < 80) value += 80; 
         color += ('00' + value.toString(16)).substr(-2);
     }
@@ -20,8 +19,6 @@ class Player {
         this.name = name || ('Agent-' + id.substr(0,4)); 
         this.device = device || 'PC';
         
-        // === V12.0: 复合颜色源 (ID + IP + 设备) ===
-        // 这样即使名字一样，IP不同颜色也不一样
         const colorSource = this.name + this.ip + this.device;
         this.color = stringToColor(colorSource);
         
@@ -34,6 +31,13 @@ class Player {
         this.deaths = 0;
         this.latency = 0;
         this.dead = false;
+        
+        // === V13.0: 状态同步修复 ===
+        // 缓存输入状态，而不是收到就执行
+        this.inputs = {
+            up: false, down: false, left: false, right: false, 
+            shoot: false, skill: false, angle: 0
+        };
         
         const validTypes = ['RIFLE', 'SNIPER', 'SHOTGUN'];
         this.type = validTypes.includes(type) ? type : 'RIFLE'; 
