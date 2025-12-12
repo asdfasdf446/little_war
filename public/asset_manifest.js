@@ -1,16 +1,29 @@
-// 美术师请注意：
-// 只需要修改 path 对应的路径，即可替换游戏内的图片
-// 确保图片背景透明，且角色默认朝向为右侧
+// 美术资源配置表
+// frames: 图片里有多少帧 (横向排列)
+// speed: 播放速度 (数字越大越慢，0为不播放)
 const ASSET_MANIFEST = {
-    // 场景
-    floor:   { path: 'assets/floor.png' },
-    crate:   { path: 'assets/crate.png' },
+    // === 环境 ===
+    floor:        { path: 'assets/floor_tile.png' },     // 地面纹理
+    crate_top:    { path: 'assets/crate_texture.png' },  // 箱子顶部纹理
+    crate_border: { path: 'assets/crate_border.png' },   // 箱子边框
 
-    // 玩家角色
-    rifle:   { path: 'assets/soldier_rifle.png' },
-    sniper:  { path: 'assets/soldier_sniper.png' },
-    shotgun: { path: 'assets/soldier_shotgun.png' },
+    // === 步枪兵 (Rifle) ===
+    rifle_legs:   { path: 'assets/rifle_legs.png',   frames: 8, speed: 0.2 },
+    rifle_torso:  { path: 'assets/rifle_torso.png',  frames: 1, speed: 0 },
+    rifle_shoot:  { path: 'assets/rifle_shoot.png',  frames: 3, speed: 0.5 },
 
-    // 目前丧尸和子弹是代码绘制的，如果需要换成图片，请在这里添加
-    // 并通知程序员修改 Renderer.js
+    // === 狙击手 (Sniper) ===
+    sniper_legs:  { path: 'assets/sniper_legs.png',  frames: 8, speed: 0.25 }, // 跑得慢，播慢点
+    sniper_torso: { path: 'assets/sniper_torso.png', frames: 1, speed: 0 },
+    sniper_shoot: { path: 'assets/sniper_shoot.png', frames: 4, speed: 0.5 },
+
+    // === 喷子 (Shotgun) ===
+    shotgun_legs: { path: 'assets/shotgun_legs.png',  frames: 8, speed: 0.2 },
+    shotgun_torso:{ path: 'assets/shotgun_torso.png', frames: 1, speed: 0 },
+    shotgun_shoot:{ path: 'assets/shotgun_shoot.png', frames: 3, speed: 0.5 },
+
+    // === 丧尸 (Zombie) ===
+    zombie_legs:  { path: 'assets/zombie_legs.png',   frames: 8, speed: 0.2 },
+    zombie_torso: { path: 'assets/zombie_torso.png',  frames: 4, speed: 0.1 }, // 身体晃动
+    zombie_attack:{ path: 'assets/zombie_attack.png', frames: 3, speed: 0.3 }
 };
